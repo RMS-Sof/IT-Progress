@@ -3,380 +3,339 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>NBNSTIC · IT Dept — Progress Dashboard</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700;800&display=swap" rel="stylesheet">
+  <title>NBNSTIC · IT Dept — Achievements (Magazine Tiles)</title>
   <style>
     :root{
-      --bg:#0b1020; --card:#0f1724; --muted:#9aa6b2; --accent-1:#ff6b6b; --accent-2:#7c3aed; --accent-3:#06b6d4; --glass: rgba(255,255,255,0.04);
+      --bg1: linear-gradient(135deg,#0f172a 0%, #0b1220 100%);
+      --card-gradient: linear-gradient(135deg,#ff7a18 0%,#af002d 50%,#319197 100%);
+      --accent: #ffcc00;
+      --glass: rgba(255,255,255,0.06);
+      --glass-2: rgba(255,255,255,0.03);
+      --card-radius: 18px;
+      --shadow: 0 8px 30px rgba(2,6,23,0.6);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,-apple-system;min-height:100vh;background:linear-gradient(180deg,#071226 0%, #051022 100%);color:#ecf3ff}
-    header{display:flex;align-items:center;justify-content:space-between;padding:22px 28px}
-    .brand{display:flex;align-items:center;gap:14px}
-    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent-2),var(--accent-3));display:flex;align-items:center;justify-content:center;font-weight:800;color:white;font-size:20px;box-shadow:0 12px 40px rgba(4,8,24,0.6)}
-    h1{margin:0;font-size:20px}
-    .subtitle{font-size:13px;color:var(--muted)}
-    .controls{display:flex;gap:12px}
-    .btn{padding:10px 14px;border-radius:10px;border:none;font-weight:700;cursor:pointer}
-    .btn-admin{background:linear-gradient(90deg,var(--accent-2),var(--accent-3));color:white}
-    .btn-export{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+    html,body{height:100%;margin:0;background:var(--bg1);color:#e6eef8}
+    .wrap{max-width:1200px;margin:32px auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+    .title{display:flex;gap:14px;align-items:center}
+    .brand{width:64px;height:64px;border-radius:14px;background:var(--card-gradient);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:20px;box-shadow:var(--shadow)}
+    h1{margin:0;font-size:20px;letter-spacing:0.2px}
+    .subtitle{opacity:0.8;font-size:13px}
 
-    main{padding:0 28px 40px}
+    .controls{display:flex;gap:10px;align-items:center}
+    .btn{background:linear-gradient(90deg,#06b6d4,#7c3aed);border:none;padding:10px 14px;border-radius:10px;color:#fff;cursor:pointer;font-weight:600;box-shadow:0 6px 18px rgba(124,58,237,0.18);transition:transform .18s ease}
+    .btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.08);color:#fff}
+    .btn:active{transform:translateY(1px)}
 
-    /* Magazine grid */
-    .mag-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:20px}
-    .tile{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:14px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 8px 30px rgba(2,6,23,0.6);transition:transform .35s cubic-bezier(.2,.9,.2,1),box-shadow .35s}
-    .tile:hover{transform:translateY(-8px);box-shadow:0 20px 60px rgba(2,6,23,0.8)}
+    .magazine{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px}
+    .tile{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:var(--card-radius);padding:18px;backdrop-filter: blur(6px);border:1px solid rgba(255,255,255,0.03);box-shadow:0 10px 30px rgba(2,6,23,0.6);position:relative;overflow:hidden;min-height:160px;transition:transform .32s cubic-bezier(.2,.9,.3,1),box-shadow .32s}
+    .tile:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(2,6,23,0.75)}
 
-    /* large feature */
-    .feature{grid-column:span 6;padding:20px;display:flex;flex-direction:column;gap:12px}
-    .feature .kicker{font-weight:800;color:var(--accent-2);font-size:12px}
-    .feature h2{margin:0;font-size:20px}
-    .feature p{margin:0;color:var(--muted)}
+    .tile .number{font-size:42px;font-weight:800;margin:0}
+    .tile .label{opacity:0.85;margin-top:6px;font-size:13px}
+    .tile .meta{position:absolute;right:12px;top:12px;font-weight:700;opacity:0.12;font-size:80px;transform:rotate(-18deg)}
 
-    /* stat tiles */
-    .stat{grid-column:span 3;padding:16px;display:flex;flex-direction:column;gap:8px}
-    .stat .meta{display:flex;align-items:center;justify-content:space-between}
-    .stat .label{font-weight:700}
-    .stat .value{font-size:28px;font-weight:800}
-    .stat .desc{font-size:13px;color:var(--muted)}
+    .big-card{grid-column:span 2;display:flex;gap:18px;align-items:stretch}
+    .big-left{flex:1;padding:18px;border-radius:12px;background:linear-gradient(135deg,#0ea5b7,#7c3aed);color:#021018}
+    .big-right{flex:1;padding:18px;border-radius:12px;background:linear-gradient(135deg,#ff7a18,#ff5a8f);color:#021018}
 
-    /* achiever card */
-    .achiever{grid-column:span 6;padding:16px;display:flex;gap:12px;align-items:flex-start}
-    .achiever .avatar{width:84px;height:84px;border-radius:12px;background:linear-gradient(135deg,var(--accent-1),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:800;color:white;font-size:22px}
-    .achiever .info{flex:1}
-    .achiever .info h3{margin:0}
-    .badge{display:inline-block;padding:6px 8px;border-radius:999px;font-weight:700;background:linear-gradient(90deg,var(--accent-2),var(--accent-3));}
+    .row{display:flex;gap:12px}
+    .muted{opacity:0.85;font-size:13px}
 
-    /* list of highlights */
-    .highlights{margin-top:8px;display:flex;flex-direction:column;gap:8px}
-    .hl{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);font-size:14px}
+    .footer{margin-top:18px;font-size:13px;color:rgba(230,238,248,0.7);opacity:0.9}
 
-    /* small table */
-    .wide{grid-column:span 12}
-    table{width:100%;border-collapse:collapse;margin-top:8px}
-    th,td{padding:10px;text-align:left;border-bottom:1px dashed rgba(255,255,255,0.03);font-size:14px;color:#eaf4ff}
-    th{color:var(--muted);font-weight:700}
+    /* Admin modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.6);display:flex;align-items:center;justify-content:center;z-index:40}
+    .modal{background:linear-gradient(180deg,#06202a, #08202a);padding:22px;border-radius:14px;border:1px solid rgba(255,255,255,0.04);width:420px;box-shadow:0 30px 80px rgba(2,6,23,0.8)}
+    .modal h2{margin:0 0 10px}
+    label{display:block;font-size:13px;margin:8px 0 6px}
+    input[type=text], input[type=number], textarea, select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff}
+    textarea{min-height:80px}
 
-    /* modal */
-    .modal-backdrop{position:fixed;inset:0;background:linear-gradient(180deg,rgba(2,6,23,0.6),rgba(2,6,23,0.85));display:none;align-items:center;justify-content:center;padding:24px;z-index:50}
-    .modal{width:920px;max-width:96%;background:linear-gradient(180deg,#061022,#071226);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.04)}
-    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
-    input[type="text"],input[type="number"],textarea{width:100%;padding:10px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:#eaf4ff}
-    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+    .admin-only{display:none}
 
-    /* responsive */
-    @media (max-width:1000px){.feature{grid-column:span 12}.stat{grid-column:span 6}.achiever{grid-column:span 12}.mag-grid{grid-template-columns:repeat(6,1fr)}}
-    @media (max-width:600px){.stat{grid-column:span 12}.mag-grid{grid-template-columns:repeat(1,1fr)}}
+    /* small screens */
+    @media (max-width:720px){.big-card{grid-column:span 1;flex-direction:column}}
 
-    /* small animation for numbers */
-    .count{transition:transform .45s cubic-bezier(.2,.9,.2,1)}
+    /* subtle entrance animation */
+    .tile{opacity:0;transform:translateY(16px);animation:pop .6s ease forwards}
+    .tile:nth-child(1){animation-delay:.05s}
+    .tile:nth-child(2){animation-delay:.09s}
+    .tile:nth-child(3){animation-delay:.13s}
+    .tile:nth-child(4){animation-delay:.17s}
+    .tile:nth-child(5){animation-delay:.21s}
+    .tile:nth-child(6){animation-delay:.25s}
+    @keyframes pop{to{opacity:1;transform:none}}
+
+    /* small decorative ribbons */
+    .ribbon{position:absolute;left:-40px;top:12px;transform:rotate(-20deg);background:linear-gradient(90deg,#ff4d6d,#ffb37a);padding:6px 48px;color:#021018;font-weight:800;border-radius:10px;box-shadow:0 8px 20px rgba(0,0,0,0.35);opacity:0.95}
+
+    /* editable highlight */
+    .editing{outline:3px dashed rgba(255,255,255,0.06);}
   </style>
 </head>
 <body>
-  <header>
-    <div class="brand">
-      <div class="logo">IT</div>
-      <div>
-        <h1>NBNSTIC — IT Dept · Progress Dashboard</h1>
-        <div class="subtitle">Inspiration for students. Designed by Prof. Rahul M. Samant | HOD-IT, NBNSTIC.</div>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <div class="brand">IT</div>
+        <div>
+          <h1>NBNSTIC — IT Dept · Achievements </h1>
+          <div class="subtitle">Current Year — <span id="yearLabel"></span> · Inspiration for Students. Designed by Prof. Rahul M. Samant | HOD-IT, NBNSTIC. </div>
+        </div>
       </div>
-    </div>
-    <div class="controls">
-      <button id="loginBtn" class="btn btn-admin">Admin Login</button>
-      <button id="exportBtn" class="btn btn-export">Export JSON</button>
-    </div>
-  </header>
+      <div class="controls">
+        <button class="btn" id="adminBtn">Admin Login</button>
+        <button class="btn secondary" id="printBtn">Print / Export</button>
+      </div>
+    </header>
 
-  <main>
-    <section class="mag-grid" id="grid">
-      <!-- Feature / Intro -->
-      <article class="tile feature">
-        <div class="kicker">Department Highlights</div>
-        <h2 id="headline">Current Year Achievements</h2>
-        <p id="subhead">A visual snapshot of key activities and high-achievers from the IT Department for the current academic year.</p>
-        <div style="display:flex;gap:10px;margin-top:8px;align-items:center">
-          <div class="badge" id="yearBadge"></div>
-          <div class="muted" id="updatedAt"></div>
-        </div>
-      </article>
-
-      <!-- Stat tiles -->
-      <div class="tile stat"><div class="meta"><div class="label">SIH Entries</div><div class="value count" id="sih_entries">0</div></div><div class="desc">Teams/projects submitted to Smart India Hackathon.</div></div>
-      <div class="tile stat"><div class="meta"><div class="label">SE Result (%)</div><div class="value count" id="res_se">0%</div></div><div class="desc"> SE pass percentage.</div></div>
-      <div class="tile stat"><div class="meta"><div class="label">TE Result (%)</div><div class="value count" id="res_te">0%</div></div><div class="desc">TE pass percentage.</div></div>
-      <div class="tile stat"><div class="meta"><div class="label">BE Result (%)</div><div class="value count" id="res_be">0%</div></div><div class="desc">BE pass percentage.</div></div>
-
-      <div class="tile stat"><div class="meta"><div class="label">Cash Prizes (₹)</div><div class="value count" id="cash_prizes">0</div></div><div class="desc">Total monetary awards won by students.</div></div>
-      <div class="tile stat"><div class="meta"><div class="label">Project Competitions</div><div class="value count" id="proj_part">0</div></div><div class="desc">Number of project competition participations.</div></div>
-      <div class="tile stat"><div class="meta"><div class="label">Aaviskar Participation</div><div class="value count" id="aaviskar">0</div></div><div class="desc">Students participating in Aaviskar Research Competition.</div></div>
-      <div class="tile stat"><div class="meta"><div class="label">Workshops Beneficiaries Students' Count</div><div class="value count" id="workshops">0</div></div><div class="desc">Total attendees across workshops.</div></div>
-
-      <div class="tile stat"><div class="meta"><div class="label">Seminar Beneficiaries Students' Count</div><div class="value count" id="seminars">0</div></div><div class="desc">Students who attended seminars.</div></div>
-      <div class="tile stat"><div class="meta"><div class="label">Total Internships</div><div class="value count" id="internships">0</div></div><div class="desc">Confirmed internship placements.</div></div>
-      <div class="tile stat"><div class="meta"><div class="label">Total Placements</div><div class="value count" id="placements">0</div></div><div class="desc">Students placed in companies.</div></div>
-      <div class="tile stat"><div class="meta"><div class="label">Publications</div><div class="value count" id="publications">0</div></div><div class="desc">Research articles / conference papers by students.</div></div>
-
-      <!-- Achiever highlight -->
-      <article class="tile achiever">
-        <div class="avatar" id="achieverAvatar">A</div>
-        <div class="info">
-          <h3 id="achieverName">Top Achiever</h3>
-          <div class="muted" id="achieverRole">Project Lead · SIH Winner</div>
-          <div class="highlights" id="achieverHighlights">
-            <!-- highlights inserted here -->
-          </div>
-        </div>
-      </article>
-
-      <!-- Recent SIH table -->
-      <div class="tile wide">
-        <h3 style="margin:0"> Educational Products of IT Department</h3>
-        <p class="muted" style="margin:8px 0 12px">Details maintained by admin.</p>
-        <table id="sihTable"><thead><tr><th>Project</th><th>Members</th><th>Prize</th></tr></thead><tbody></tbody></table>
+    <main>
+      <div class="magazine" id="magazine">
+        <!-- tiles injected by JS -->
       </div>
 
-    </section>
-  </main>
-
-  <!-- Admin modal -->
-  <div id="modal" class="modal-backdrop" aria-hidden="true">
-    <div class="modal">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <h2 style="margin:0">Admin · Update Dashboard</h2>
-        <div><button id="closeModal" class="btn btn-export">Close</button></div>
+      <div class="footer">
+        <div>Department Educational Products: <strong id="eduProducts"></strong></div>
+        <div style="margin-top:6px">Note: Designed by Prof. Rahul M. Samant | HOD-IT, NBNSTIC.</div>
       </div>
-      <form id="adminForm">
-        <div style="display:grid;grid-template-columns:1fr 320px;gap:12px">
-          <div>
-            <div class="form-grid">
-              <div>
-                <label>SIH Entries (count)</label>
-                <input id="f_sih_entries" type="number" min="0">
-              </div>
-              <div>
-                <label>SE Result (%)</label>
-                <input id="f_res_se" type="number" min="0" max="100">
-              </div>
-              <div>
-                <label>TE Result (%)</label>
-                <input id="f_res_te" type="number" min="0" max="100">
-              </div>
-              <div>
-                <label>BE Result (%)</label>
-                <input id="f_res_be" type="number" min="0" max="100">
-              </div>
-
-              <div>
-                <label>Total Cash Prizes (₹)</label>
-                <input id="f_cash_prizes" type="number" min="0">
-              </div>
-              <div>
-                <label>Project Competitions</label>
-                <input id="f_proj_part" type="number" min="0">
-              </div>
-              <div>
-                <label>Aaviskar Participation</label>
-                <input id="f_aaviskar" type="number" min="0">
-              </div>
-              <div>
-                <label>Workshops Beneficiaries</label>
-                <input id="f_workshops" type="number" min="0">
-              </div>
-
-              <div>
-                <label>Seminar Beneficiaries</label>
-                <input id="f_seminars" type="number" min="0">
-              </div>
-              <div>
-                <label>Internships Count</label>
-                <input id="f_internships" type="number" min="0">
-              </div>
-              <div>
-                <label>Placement Count</label>
-                <input id="f_placements" type="number" min="0">
-              </div>
-              <div>
-                <label>Publication Count</label>
-                <input id="f_publications" type="number" min="0">
-              </div>
-            </div>
-
-            <hr style="margin:12px 0;border:none;border-top:1px dashed rgba(255,255,255,0.04)">
-            <h4 style="margin:6px 0">Featured Achiever</h4>
-            <label>Name</label>
-            <input id="f_ach_name" type="text">
-            <label>Role / Title</label>
-            <input id="f_ach_role" type="text">
-            <label>Highlights (comma separated — up to 3)</label>
-            <input id="f_ach_high" type="text">
-          </div>
-
-          <div style="padding:8px;border-radius:8px;background:var(--glass);height:100%">
-            <h4 style="margin:6px 0">SIH Entries</h4>
-            <div style="margin-top:8px"><button id="addSihBtn" class="btn btn-export">Add SIH Entry</button></div>
-            <div style="margin-top:12px">Admin password: <span style="font-weight:800" class="badge"></span></div>
-            <div style="margin-top:18px" class="muted"></div>
-            <div class="actions" style="margin-top:18px">
-              <button id="saveBtn" type="button" class="btn btn-admin">Save</button>
-              <button id="resetBtn" type="button" class="btn btn-export">Reset</button>
-            </div>
-          </div>
-        </div>
-      </form>
-    </div>
+    </main>
   </div>
 
-<script>
-(() => {
-  const YEAR = new Date().getFullYear();
-  const KEY = 'nbnstic_mag_' + YEAR;
-  const CHANNEL = new BroadcastChannel('nbnstic_mag_channel_' + YEAR);
+  <!-- Admin modal -->
+  <div id="modalRoot" style="display:none"></div>
 
-  const sample = {
-    year: YEAR,
-    sih_entries: 5,
-    sih_list: [
-      {},
-      {}
-    ],
-    res_se:82, res_te:79, res_be:86,
-    cash_prizes:150000, proj_part:32, aaviskar:10, workshops:420, seminars:320, internships:95, placements:82, publications:18,
-    achiever: {name:'Ankit Shah', role:'Team Lead, SIH Winner', highlights:['Developed cross-platform prototype','Won Institute-level prize','Mentored juniors']},
-    updated: new Date().toISOString()
-  };
+  <script>
+    // --- Demo dashboard data model ---
+    const STORAGE_KEY = 'nbnstic_it_dashboard_' + new Date().getFullYear();
+    const currentYear = new Date().getFullYear();
+    document.getElementById('yearLabel').textContent = currentYear;
 
-  function load(){try{const raw=localStorage.getItem(KEY);return raw?JSON.parse(raw):JSON.parse(JSON.stringify(sample));}catch(e){console.error(e);return JSON.parse(JSON.stringify(sample))}}
-  function save(state){state.updated = new Date().toISOString();localStorage.setItem(KEY,JSON.stringify(state));CHANNEL.postMessage({type:'update',state});}
+    const defaultData = {
+      year: currentYear,
+      smartIndiaHackathon: 7,
+      resultSE_passPercent: 82.4,
+      resultTE_passPercent: 79.1,
+      resultBE_passPercent: 85.6,
+      totalCashPrizes: 225000, // INR
+      projectCompetitions: 18,
+      aaviskarParticipation: 12,
+      workshopsBeneficiaries: 540,
+      seminarsBeneficiaries: 320,
+      internshipsCount: 86,
+      placementsCount: 76,
+      publicationsCount: 14,
+      eduProducts: ['EduBot','EcoSystem']
+    };
 
-  let state = load();
+    function loadData(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(raw) return JSON.parse(raw);
+      }catch(e){console.error(e)}
+      return defaultData;
+    }
+    function saveData(data){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
 
-  // elements
-  const ids = ['sih_entries','res_se','res_te','res_be','cash_prizes','proj_part','aaviskar','workshops','seminars','internships','placements','publications'];
-  const grid = document.getElementById('grid');
+    // build tiles
+    function render(){
+      const data = loadData();
+      const mag = document.getElementById('magazine');
+      mag.innerHTML = '';
+      document.getElementById('eduProducts').textContent = data.eduProducts.join(' · ');
 
-  function render(){
-    document.getElementById('yearBadge').textContent = state.year;
-    document.getElementById('updatedAt').textContent = 'Last updated: ' + new Date(state.updated || Date.now()).toLocaleString();
-    ids.forEach(id=>{
-      const el = document.getElementById(id);
-      if(!el) return;
-      if(id==='cash_prizes') el.textContent = (Number(state[id])||0).toLocaleString();
-      else if(['res_se','res_te','res_be'].includes(id)) el.textContent = (Number(state[id])||0) + '%';
-      else el.textContent = Number(state[id]||0);
+      const tiles = [
+        {label:'Smart India Hackathon Entries', value:data.smartIndiaHackathon,meta:'SIH'},
+        {label:'SE Result (Pass %)', value:data.resultSE_passPercent+' %',meta:'SE'},
+        {label:'TE Result (Pass %)', value:data.resultTE_passPercent+' %',meta:'TE'},
+        {label:'BE Result (Pass %)', value:data.resultBE_passPercent+' %',meta:'BE'},
+        {label:'Total Cash Prizes (₹)', value:'₹ '+formatNumber(data.totalCashPrizes),meta:'Prizes'},
+        {label:'Project Competitions Participation', value:data.projectCompetitions,meta:'Projects'},
+        {label:'Aaviskar Participation', value:data.aaviskarParticipation,meta:'Aaviskar'},
+        {label:'Workshops Beneficiaries', value:formatNumber(data.workshopsBeneficiaries),meta:'Workshops'},
+        {label:'Seminar Beneficiaries', value:formatNumber(data.seminarsBeneficiaries),meta:'Seminars'},
+        {label:'Internships Count', value:data.internshipsCount,meta:'Intern'},
+        {label:'Placement Count', value:data.placementsCount,meta:'Placements'},
+        {label:'Publication Count', value:data.publicationsCount,meta:'Pubs'}
+      ];
+
+      // make a big card for two featured edu products
+      const bigCard = document.createElement('div');
+      bigCard.className = 'tile big-card';
+      bigCard.innerHTML = `
+        <div class="big-left">
+          <div style="font-weight:800;font-size:18px">Featured Product</div>
+          <div style="margin-top:10px;font-size:14px">${data.eduProducts[0] || '—'}</div>
+          <div style="margin-top:12px;font-size:12px;opacity:0.9">Short description: A modular educational chatbot to assist students with lab instructions, course FAQs and placement prep.</div>
+        </div>
+        <div class="big-right">
+          <div style="font-weight:800;font-size:18px">Ecosystem</div>
+          <div style="margin-top:10px;font-size:14px">${data.eduProducts[1] || '—'}</div>
+          <div style="margin-top:12px;font-size:12px;opacity:0.9">Short description: A student engagement platform integrating 100 + effective consultations, 80+ productivity tools & much more.</div>
+        </div>
+      `;
+      mag.appendChild(bigCard);
+
+      tiles.forEach((t, i)=>{
+        const el = document.createElement('div');
+        el.className = 'tile';
+        el.innerHTML = `
+          <div class="meta">${t.meta}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div class="number">${t.value}</div>
+              <div class="label">${t.label}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:12px;opacity:0.9">Year</div>
+              <div style="font-weight:700">${data.year}</div>
+            </div>
+          </div>
+        `;
+        mag.appendChild(el);
+      });
+    }
+
+    function formatNumber(n){
+      return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",");
+    }
+
+    // Admin actions (client-side demo auth)
+    const ADMIN_PASSWORD = 'HoDiT';
+
+    function openAdmin(){
+      const modalRoot = document.getElementById('modalRoot');
+      modalRoot.innerHTML = `
+        <div class="modal-backdrop">
+          <div class="modal" role="dialog" aria-modal="true">
+            <h2>Admin — Edit Dashboard</h2>
+            <div id="adminStep">
+              <label>Enter Admin Password</label>
+              <input type="password" id="adminPass" placeholder="Password" />
+              <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
+                <button class="btn" id="tryPass">Enter</button>
+                <button class="btn secondary" id="closeModal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      modalRoot.style.display = 'block';
+
+      document.getElementById('closeModal').onclick = ()=>{modalRoot.style.display='none';modalRoot.innerHTML=''};
+      document.getElementById('tryPass').onclick = ()=>{
+        const val = document.getElementById('adminPass').value;
+        if(val === ADMIN_PASSWORD){
+          showAdminEditor();
+        } else {
+          alert('Incorrect password.');
+        }
+      }
+    }
+
+    function showAdminEditor(){
+      const modalRoot = document.getElementById('modalRoot');
+      const data = loadData();
+      modalRoot.innerHTML = `
+        <div class="modal-backdrop">
+          <div class="modal" role="dialog" aria-modal="true">
+            <h2>Admin Editor</h2>
+            <div style="max-height:60vh;overflow:auto;padding-right:6px">
+              <label>Smart India Hackathon Entries</label>
+              <input type="number" id="smartIndiaHackathon" value="${data.smartIndiaHackathon}" />
+
+              <label>SE Result (Pass %)</label>
+              <input type="number" step="0.1" id="resultSE" value="${data.resultSE_passPercent}" />
+
+              <label>TE Result (Pass %)</label>
+              <input type="number" step="0.1" id="resultTE" value="${data.resultTE_passPercent}" />
+
+              <label>BE Result (Pass %)</label>
+              <input type="number" step="0.1" id="resultBE" value="${data.resultBE_passPercent}" />
+
+              <label>Total Cash Prizes (INR)</label>
+              <input type="number" id="totalCashPrizes" value="${data.totalCashPrizes}" />
+
+              <label>Project Competitions Participation</label>
+              <input type="number" id="projectCompetitions" value="${data.projectCompetitions}" />
+
+              <label>Aaviskar Participation</label>
+              <input type="number" id="aaviskarParticipation" value="${data.aaviskarParticipation}" />
+
+              <label>Workshops Beneficiaries</label>
+              <input type="number" id="workshopsBeneficiaries" value="${data.workshopsBeneficiaries}" />
+
+              <label>Seminar Beneficiaries</label>
+              <input type="number" id="seminarsBeneficiaries" value="${data.seminarsBeneficiaries}" />
+
+              <label>Internships Count</label>
+              <input type="number" id="internshipsCount" value="${data.internshipsCount}" />
+
+              <label>Placement Count</label>
+              <input type="number" id="placementsCount" value="${data.placementsCount}" />
+
+              <label>Publication Count</label>
+              <input type="number" id="publicationsCount" value="${data.publicationsCount}" />
+
+              <label>Educational Products (comma-separated)</label>
+              <input type="text" id="eduProductsInput" value="${data.eduProducts.join(',')}" />
+
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
+              <button class="btn" id="saveAdmin">Save</button>
+              <button class="btn secondary" id="cancelAdmin">Cancel</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('cancelAdmin').onclick = ()=>{modalRoot.style.display='none';modalRoot.innerHTML='';};
+      document.getElementById('saveAdmin').onclick = ()=>{
+        const newData = {
+          year: currentYear,
+          smartIndiaHackathon: Number(document.getElementById('smartIndiaHackathon').value)||0,
+          resultSE_passPercent: Number(document.getElementById('resultSE').value)||0,
+          resultTE_passPercent: Number(document.getElementById('resultTE').value)||0,
+          resultBE_passPercent: Number(document.getElementById('resultBE').value)||0,
+          totalCashPrizes: Number(document.getElementById('totalCashPrizes').value)||0,
+          projectCompetitions: Number(document.getElementById('projectCompetitions').value)||0,
+          aaviskarParticipation: Number(document.getElementById('aaviskarParticipation').value)||0,
+          workshopsBeneficiaries: Number(document.getElementById('workshopsBeneficiaries').value)||0,
+          seminarsBeneficiaries: Number(document.getElementById('seminarsBeneficiaries').value)||0,
+          internshipsCount: Number(document.getElementById('internshipsCount').value)||0,
+          placementsCount: Number(document.getElementById('placementsCount').value)||0,
+          publicationsCount: Number(document.getElementById('publicationsCount').value)||0,
+          eduProducts: (document.getElementById('eduProductsInput').value || '').split(',').map(s=>s.trim()).filter(Boolean)
+        };
+        saveData(newData);
+        render();
+        alert('Saved successfully');
+        modalRoot.style.display='none';modalRoot.innerHTML='';
+      };
+    }
+
+    // print
+    function doPrint(){
+      window.print();
+    }
+
+    // init
+    document.getElementById('adminBtn').addEventListener('click', openAdmin);
+    document.getElementById('printBtn').addEventListener('click', doPrint);
+
+    render();
+
+    // accessibility: close modal on Escape
+    window.addEventListener('keydown', (e)=>{
+      if(e.key==='Escape'){
+        const mr = document.getElementById('modalRoot');
+        if(mr) {mr.style.display='none';mr.innerHTML=''}
+      }
     });
 
-    // achiever
-    const a = state.achiever || {name:'Top Achiever',role:'',highlights:[]};
-    document.getElementById('achieverAvatar').textContent = (a.name||'A').split(' ').map(s=>s[0]).slice(0,2).join('');
-    document.getElementById('achieverName').textContent = a.name;
-    document.getElementById('achieverRole').textContent = a.role;
-    const hl = document.getElementById('achieverHighlights'); hl.innerHTML='';
-    (a.highlights||[]).slice(0,3).forEach(h=>{const d=document.createElement('div');d.className='hl';d.textContent=h;hl.appendChild(d)});
-
-    // SIH table
-    const tbody = document.querySelector('#sihTable tbody'); tbody.innerHTML='';
-    (state.sih_list||[]).forEach(r=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${escapeHTML(r.project)}</td><td>${escapeHTML(r.members)}</td><td>${escapeHTML(r.prize)}</td>`;tbody.appendChild(tr)});
-  }
-
-  function escapeHTML(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-
-  render();
-
-  // Admin logic
-  const modal = document.getElementById('modal');
-  const loginBtn = document.getElementById('loginBtn');
-  const closeModal = document.getElementById('closeModal');
-  const saveBtn = document.getElementById('saveBtn');
-  const resetBtn = document.getElementById('resetBtn');
-  const addSihBtn = document.getElementById('addSihBtn');
-  const exportBtn = document.getElementById('exportBtn');
-
-  function promptPass(){
-    const p = prompt('Enter admin password:'); if(p===null) return false; if(p==='HoDiT') return true; alert('Incorrect password'); return false;
-  }
-
-  loginBtn.addEventListener('click', ()=>{ if(promptPass()){openModal()} });
-  closeModal.addEventListener('click', ()=>{modal.style.display='none'});
-
-  function openModal(){
-    modal.style.display='flex';
-    // populate fields
-    document.getElementById('f_sih_entries').value = state.sih_entries||0;
-    document.getElementById('f_res_se').value = state.res_se||0;
-    document.getElementById('f_res_te').value = state.res_te||0;
-    document.getElementById('f_res_be').value = state.res_be||0;
-    document.getElementById('f_cash_prizes').value = state.cash_prizes||0;
-    document.getElementById('f_proj_part').value = state.proj_part||0;
-    document.getElementById('f_aaviskar').value = state.aaviskar||0;
-    document.getElementById('f_workshops').value = state.workshops||0;
-    document.getElementById('f_seminars').value = state.seminars||0;
-    document.getElementById('f_internships').value = state.internships||0;
-    document.getElementById('f_placements').value = state.placements||0;
-    document.getElementById('f_publications').value = state.publications||0;
-    const ach = state.achiever||{};
-    document.getElementById('f_ach_name').value = ach.name||'';
-    document.getElementById('f_ach_role').value = ach.role||'';
-    document.getElementById('f_ach_high').value = (ach.highlights||[]).join(', ');
-  }
-
-  saveBtn.addEventListener('click', ()=>{
-    // read
-    state.sih_entries = Number(document.getElementById('f_sih_entries').value) || 0;
-    state.res_se = Number(document.getElementById('f_res_se').value) || 0;
-    state.res_te = Number(document.getElementById('f_res_te').value) || 0;
-    state.res_be = Number(document.getElementById('f_res_be').value) || 0;
-    state.cash_prizes = Number(document.getElementById('f_cash_prizes').value) || 0;
-    state.proj_part = Number(document.getElementById('f_proj_part').value) || 0;
-    state.aaviskar = Number(document.getElementById('f_aaviskar').value) || 0;
-    state.workshops = Number(document.getElementById('f_workshops').value) || 0;
-    state.seminars = Number(document.getElementById('f_seminars').value) || 0;
-    state.internships = Number(document.getElementById('f_internships').value) || 0;
-    state.placements = Number(document.getElementById('f_placements').value) || 0;
-    state.publications = Number(document.getElementById('f_publications').value) || 0;
-    state.sih_entries = Number(state.sih_list?.length || 0);
-    // achiever
-    const an = document.getElementById('f_ach_name').value.trim();
-    const ar = document.getElementById('f_ach_role').value.trim();
-    const ah = document.getElementById('f_ach_high').value.split(',').map(s=>s.trim()).filter(Boolean).slice(0,3);
-    state.achiever = {name:an||'Top Achiever', role:ar||'', highlights:ah};
-    save(state);
-    render();
-    alert('Saved');
-  });
-
-  resetBtn.addEventListener('click', ()=>{
-    if(!confirm('Reset to sample data?')) return; state = JSON.parse(JSON.stringify(sample)); save(state); render(); alert('Reset');
-  });
-
-  addSihBtn.addEventListener('click', ()=>{
-    const project = prompt('Project title:'); if(!project) return; const members = prompt('Members (comma separated):')||''; const prize = prompt('Prize / status:')||'-';
-    state.sih_list = state.sih_list||[]; state.sih_list.push({project,members,prize}); state.sih_entries = state.sih_list.length; save(state); render();
-  });
-
-  exportBtn.addEventListener('click', ()=>{
-    const blob = new Blob([JSON.stringify(state,null,2)],{type:'application/json'}); const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`nbnstic_mag_${YEAR}.json`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-  });
-
-  // Broadcast receiver
-  CHANNEL.onmessage = ev=>{ if(ev.data && ev.data.type==='update'){ state = ev.data.state; render(); }};
-
-  // utility: save wrapper
-  function save(s){ s.updated = new Date().toISOString(); localStorage.setItem(KEY, JSON.stringify(s)); CHANNEL.postMessage({type:'update',state:s}); }
-
-  // close modal if click backdrop
-  document.getElementById('modal').addEventListener('click', e=>{ if(e.target.id==='modal') e.currentTarget.style.display='none'; });
-
-  // lightweight animation on value change
-  setInterval(()=>{
-    ids.forEach(id=>{const el=document.getElementById(id); if(!el) return; el.classList.add('count'); setTimeout(()=>el.classList.remove('count'),600)});
-  },4000);
-
-  // expose for dev
-  window.NBNSTICMagazine = {getState: ()=>JSON.parse(localStorage.getItem(KEY)), setState:(s)=>{state=s; save(state); render();}};
-})();
-</script>
+  </script>
 </body>
 </html>
